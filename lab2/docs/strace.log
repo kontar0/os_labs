@@ -1,63 +1,61 @@
-13    18:48:30.133279 execve("./build/parent", ["./build/parent"], 0xffffd7aaa1f0 /* 8 vars */) = 0
-13    18:48:30.134578 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-13    18:48:30.134653 close(3)          = 0
-13    18:48:30.134790 openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-13    18:48:30.135154 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\360\206\2\0\0\0\0\0"..., 832) = 832
-13    18:48:30.135677 close(3)          = 0
-13    18:48:30.135884 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=0}, NULL, 8) = 0
-13    18:48:30.137352 read(0, "tests/data/basic.txt\n", 4096) = 21
-13    18:48:30.137546 openat(AT_FDCWD, "tests/data/basic.txt", O_RDONLY) = 3
-13    18:48:30.137972 pipe2([4, 5], 0)  = 0
-13    18:48:30.138102 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffff850aafb0) = 14
-13    18:48:30.138280 write(2, "[parent PID=13] created child PI"..., 37) = 37
-14    18:48:30.138378 dup3(3, 0, 0 <unfinished ...>
-13    18:48:30.138407 close(3)          = 0
-14    18:48:30.138485 <... dup3 resumed>) = 0
-13    18:48:30.138518 close(5)          = 0
-14    18:48:30.138561 dup3(5, 1, 0 <unfinished ...>
-13    18:48:30.138584 read(4,  <unfinished ...>
-14    18:48:30.138605 <... dup3 resumed>) = 1
-14    18:48:30.138658 close(3)          = 0
-14    18:48:30.138828 close(5)          = 0
-14    18:48:30.139016 close(4)          = 0
-14    18:48:30.139181 execve("/work/lab2/build/child", ["/work/lab2/build/child"], 0xffffd7305fe8 /* 8 vars */) = 0
-14    18:48:30.139950 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-14    18:48:30.140214 close(3)          = 0
-14    18:48:30.140373 openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-14    18:48:30.140537 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\360\206\2\0\0\0\0\0"..., 832) = 832
-14    18:48:30.141372 close(3)          = 0
-14    18:48:30.142290 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=0}, NULL, 8) = 0
-14    18:48:30.142546 write(2, "[child PID=14] started, PPID=13\n", 32) = 32
-14    18:48:30.142747 read(0, "1 2 3\n10 20 30 40\n-5 5\n42\n", 4096) = 26
-14    18:48:30.143221 write(1, "6\n", 2 <unfinished ...>
-13    18:48:30.143304 <... read resumed>"6\n", 4096) = 2
-14    18:48:30.143340 <... write resumed>) = 2
-13    18:48:30.143396 write(1, "6\n", 2 <unfinished ...>
-14    18:48:30.143462 write(1, "100\n", 4 <unfinished ...>
-13    18:48:30.143585 <... write resumed>) = 2
-13    18:48:30.143628 read(4,  <unfinished ...>
-14    18:48:30.143658 <... write resumed>) = 4
-13    18:48:30.143839 <... read resumed>"100\n", 4096) = 4
-13    18:48:30.144023 write(1, "100\n", 4 <unfinished ...>
-14    18:48:30.144139 write(1, "0\n", 2 <unfinished ...>
-13    18:48:30.144196 <... write resumed>) = 4
-14    18:48:30.144235 <... write resumed>) = 2
-13    18:48:30.144270 read(4, "0\n", 4096) = 2
-14    18:48:30.144372 write(1, "42\n", 3 <unfinished ...>
-13    18:48:30.144408 write(1, "0\n", 2) = 2
-14    18:48:30.144473 <... write resumed>) = 3
-13    18:48:30.144506 read(4, "42\n", 4096) = 3
-14    18:48:30.144576 read(0,  <unfinished ...>
-13    18:48:30.144608 write(1, "42\n", 3) = 3
-14    18:48:30.144681 <... read resumed>"", 4096) = 0
-13    18:48:30.144711 read(4,  <unfinished ...>
-14    18:48:30.144856 write(2, "[child PID=14] finished, 4 line("..., 45) = 45
-14    18:48:30.145058 exit_group(0)     = ?
-13    18:48:30.145252 <... read resumed>"", 4096) = 0
-13    18:48:30.145304 close(4)          = 0
-14    18:48:30.145394 +++ exited with 0 +++
-13    18:48:30.145445 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=14, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
-13    18:48:30.145504 wait4(14, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 14
-13    18:48:30.145592 write(2, "[parent PID=13] child PID=14 exi"..., 48) = 48
-13    18:48:30.145698 exit_group(0)     = ?
-13    18:48:30.145890 +++ exited with 0 +++
+1659  execve("./parent", ["./parent"], 0x7ffe239ce398 /* 163 vars */) = 0
+1659  openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+1659  close(3)                          = 0
+1659  openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+1659  read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
+1659  close(3)                          = 0
+1659  write(2, "[parent PID=1659] \320\267\320\260\320\277\321\203\321\211\320\265\320\275"..., 59) = 59
+1659  read(0, "tests/data/basic.txt\n", 4096) = 21
+1659  openat(AT_FDCWD, "tests/data/basic.txt", O_RDONLY) = 3
+1659  pipe2([4, 5], 0)                  = 0
+1659  clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f344bf45a10) = 1660
+1659  write(2, "[parent PID=1659] \321\201\320\276\320\267\320\264\320\260\320\275 \321"..., 55) = 55
+1659  close(3 <unfinished ...>
+1660  dup2(3, 0 <unfinished ...>
+1659  <... close resumed>)              = 0
+1660  <... dup2 resumed>)               = 0
+1659  close(5 <unfinished ...>
+1660  dup2(5, 1 <unfinished ...>
+1659  <... close resumed>)              = 0
+1660  <... dup2 resumed>)               = 1
+1659  read(4,  <unfinished ...>
+1660  close(3)                          = 0
+1660  close(5)                          = 0
+1660  close(4)                          = 0
+1660  execve("./child", ["child"], 0x7ffd0b3610d8 /* 163 vars */) = 0
+1660  openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+1660  close(3)                          = 0
+1660  openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+1660  read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
+1660  close(3)                          = 0
+1660  write(2, "[child PID=1660] \320\267\320\260\320\277\321\203\321\211\320\265\320\275,"..., 59) = 59
+1660  read(0, "1 2 3\n10 20 30 40\n-5 5\n42\n", 4096) = 26
+1660  write(1, "6\n", 2 <unfinished ...>
+1659  <... read resumed>"6\n", 256)     = 2
+1660  <... write resumed>)              = 2
+1659  write(1, "6\n", 2 <unfinished ...>
+1660  write(1, "100\n", 4 <unfinished ...>
+1659  <... write resumed>)              = 2
+1660  <... write resumed>)              = 4
+1659  read(4,  <unfinished ...>
+1660  write(1, "0\n", 2 <unfinished ...>
+1659  <... read resumed>"100\n", 256)   = 4
+1660  <... write resumed>)              = 2
+1659  write(1, "100\n", 4 <unfinished ...>
+1660  write(1, "42\n", 3 <unfinished ...>
+1659  <... write resumed>)              = 4
+1660  <... write resumed>)              = 3
+1659  read(4,  <unfinished ...>
+1660  read(0,  <unfinished ...>
+1659  <... read resumed>"0\n42\n", 256) = 5
+1660  <... read resumed>"", 4096)       = 0
+1659  write(1, "0\n42\n", 5)            = 5
+1659  read(4,  <unfinished ...>
+1660  write(2, "[child PID=1660] \320\276\320\261\321\200\320\260\320\261\320\276\321\202\320"..., 52) = 52
+1659  <... read resumed>"", 256)        = 0
+1660  +++ exited with 0 +++
+1659  --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=1660, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+1659  close(4)                          = 0
+1659  wait4(1660, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 1660
+1659  write(2, "[parent PID=1659] \321\200\320\265\320\261\321\221\320\275\320\276\320\272"..., 79) = 79
+1659  +++ exited with 0 +++

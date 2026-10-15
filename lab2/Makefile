@@ -1,38 +1,18 @@
-CC      = gcc
-CFLAGS  ?= -std=c11 -Wall -Wextra -Wpedantic -Werror -O2 -g
-CPPFLAGS = -D_POSIX_C_SOURCE=200809L -Iinclude
+CC = gcc
+CFLAGS = -Wall -Wextra -g
 
-BUILD   = build
-COMMON  = $(BUILD)/io_utils.o
-PARENT_OBJS = $(BUILD)/parent.o $(BUILD)/process.o $(COMMON)
-CHILD_OBJS  = $(BUILD)/child.o $(BUILD)/sum.o $(COMMON)
+all: parent child
 
-.PHONY: all clean test trace
+parent: parent.c process.c process.h
+	$(CC) $(CFLAGS) -o parent parent.c process.c
 
-all: $(BUILD)/parent $(BUILD)/child
-
-$(BUILD)/parent: $(PARENT_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
-
-$(BUILD)/child: $(CHILD_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
-
-$(BUILD)/%.o: src/%.c | $(BUILD)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
-
-$(BUILD):
-	mkdir -p $@
-
--include $(wildcard $(BUILD)/*.d)
+child: child.c sum.c sum.h
+	$(CC) $(CFLAGS) -o child child.c sum.c
 
 test: all
-	./tests/run_tests.sh
-
-# Трассировка всех процессов (-f), запись в docs/strace.log
-trace: all
-	echo tests/data/basic.txt | strace -f -tt -e trace=process,pipe,pipe2,dup2,dup3,openat,close,read,write,rt_sigaction \
-		-o docs/strace.log ./$(BUILD)/parent
-	@echo "trace written to docs/strace.log"
+	sh tests/run_tests.sh
 
 clean:
-	rm -rf $(BUILD)
+	rm -f parent child
+
+.PHONY: all test clean

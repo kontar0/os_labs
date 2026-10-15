@@ -1,11 +1,11 @@
 <div align="center">
 
 **Отчёт по лабораторной работе №2**
-по курсу «Операционные системы»
+по курсу "Операционные системы"
 
 **Тема: Управление процессами. Обмен данными между процессами через каналы**
 
-Вариант 6
+Группа 2, вариант 6
 
 Выполнил: студент группы ______ ____________________
 Проверил: ____________________
@@ -18,325 +18,265 @@
 
 ## 1. Цель работы
 
-Получить практические навыки управления процессами в ОС и обмена данными между процессами через каналы (pipe).
+Научиться создавать процессы, запускать в них другие программы, перенаправлять их ввод и вывод и передавать данные между процессами через канал (pipe).
 
-## 2. Задание (группа 2, вариант 6)
+## 2. Задание
 
-Родительский процесс создаёт дочерний. Пользователь вводит в консоль родителя первой строкой имя файла. Этот файл открывается на чтение и **подменяет стандартный ввод дочернего процесса**, а **стандартный вывод дочернего процесса перенаправляется в pipe1**. Родитель читает из pipe1 и выводит прочитанное в свой stdout. Родитель и ребёнок — разные программы.
+Родитель читает из stdin первой строкой имя файла и открывает его на чтение. Затем создаёт дочерний процесс (это отдельная программа), у которого stdin подменён этим файлом, а stdout перенаправлен в pipe1. Ребёнок читает строки вида `число число число`, считает сумму (тип `int`, чисел в строке сколько угодно) и пишет её в stdout. Родитель читает pipe1 и печатает прочитанное в свой stdout.
 
-В файле записаны команды вида `число число число<endline>`. Дочерний процесс считает сумму чисел и выводит её в stdout. Числа имеют тип `int`, их количество в строке может быть любым.
+Платформа: Linux (Ubuntu 24.04), gcc, только POSIX API.
 
-**Платформа:** Linux (Ubuntu 24.04 LTS, gcc 13.3), POSIX API.
-
-## 3. Архитектура решения
+## 3. Как устроено
 
 ```
-                    stdin (пользователь: имя файла)
-                             │
-                             ▼
- ┌──────────────────────────────────────────────┐
- │ parent                                       │
- │  read(0) → имя файла                         │
- │  open(file, O_RDONLY) → fd_file              │
- │  pipe(pipe1)                                 │
- │  fork() ─────────────────┐                   │
- │  close(fd_file), close(pipe1[1])             │
- │  read(pipe1[0]) → write(1)  ◄──────┐         │──► stdout (суммы)
- │  waitpid(child)                    │         │
- └────────────────────────────────────│─────────┘
-                            │         │ pipe1
-                            ▼         │
- ┌────────────────────────────────────│─────────┐
- │ child (после fork, до exec):       │         │
- │  dup2(fd_file, 0)   stdin  ← File  │         │
- │  dup2(pipe1[1], 1)  stdout → pipe1─┘         │
- │  close(...) лишних дескрипторов              │
- │  execv("child")                              │
- │                                              │
- │ child (программа): читает stdin построчно,   │
- │  считает сумму, write(1, "сумма\n")          │──► stderr (диагностика)
- └──────────────────────────────────────────────┘
+ пользователь: "tests/data/basic.txt"
+        │ stdin
+        ▼
+ ┌─────────────── parent ───────────────┐
+ │ fgets -> имя файла                   │
+ │ open(файл) = 3                       │
+ │ pipe(pipe1): [0] чтение, [1] запись  │
+ │ fork ───────────────┐                │
+ │ close(3), close(pipe1[1])            │
+ │ read(pipe1[0]) -> write(1) ◄──────┐  │ ──► stdout: суммы
+ │ waitpid(child)                    │  │
+ └───────────────────────────────────│──┘
+                       │             │ pipe1
+                       ▼             │
+ ┌─────── ребёнок (до exec) ─────────│──┐
+ │ dup2(3, 0)        stdin  = файл   │  │
+ │ dup2(pipe1[1], 1) stdout = pipe1 ─┘  │
+ │ close(лишние номера)                 │
+ │ execl("./child")                     │
+ ├─────── программа child ──────────────┤
+ │ getline(stdin) -> сумма -> write(1)  │ ──► stderr: сообщения с PID
+ └──────────────────────────────────────┘
 ```
 
-**Состав проекта:**
-
-| Файл | Назначение |
+| Файл | Что в нём |
 |---|---|
-| [src/parent.c](src/parent.c) | Родитель: ввод имени файла, `open`, `pipe`, пересылка данных из канала в stdout, код возврата |
-| [src/process.c](src/process.c), [include/process.h](include/process.h) | Создание процесса с перенаправлением (`fork`/`dup2`/`execv`), ожидание (`waitpid`), поиск исполняемого файла `child` |
-| [src/child.c](src/child.c) | Дочерняя программа: читает команды из stdin, пишет суммы в stdout |
-| [src/sum.c](src/sum.c), [include/sum.h](include/sum.h) | Разбор строки и сумма в `int` с проверкой диапазона и переполнения |
-| [src/io_utils.c](src/io_utils.c), [include/io_utils.h](include/io_utils.h) | Чтение строк любой длины поверх `read()`, `write_all()`, журнал с PID |
-| [Makefile](Makefile) | Сборка (`make`), тесты (`make test`), трассировка (`make trace`) |
-| [tests/run_tests.sh](tests/run_tests.sh) | Автотесты, включая краевые случаи |
+| [parent.c](parent.c) | родитель: имя файла, `open`, `pipe`, чтение из трубы, код возврата |
+| [process.c](process.c), [process.h](process.h) | `start_child`: `fork` + `dup2` + `execl`; `wait_child`: `waitpid` |
+| [child.c](child.c) | ребёнок: читает строки из stdin, пишет суммы в stdout |
+| [sum.c](sum.c), [sum.h](sum.h) | разбор строки через `strtol` и проверки на мусор и выход за `int` |
+| [Makefile](Makefile) | `make`, `make test`, `make clean` |
+| [tests/run_tests.sh](tests/run_tests.sh) | 5 тестов |
 
-**Протокол обмена:** ребёнок пишет в pipe1 по одной строке на каждую команду: `"<сумма>\n"`. Сообщения об ошибках во входных данных идут в stderr ребёнка. stderr не перенаправлен, поэтому они сразу выводятся в терминал и не смешиваются с результатами. Конец передачи — закрытие канала: ребёнок завершается, `read()` у родителя возвращает 0.
+Ребёнок пишет по одной строке на каждую сумму. Сообщения с PID и ошибки оба процесса пишут в stderr, он не перенаправлен, поэтому они не смешиваются с суммами. Конец данных: ребёнок завершается, у трубы не остаётся концов записи, `read` у родителя возвращает 0.
 
-**Коды завершения child:** 0 — всё обработано; 1 — были некорректные строки (остальные строки обработаны); 2 — ошибка ввода-вывода или обрыв канала. Код 127 означает, что не удался `dup2`/`execv`. Родитель возвращает 0, только если ребёнок завершился с кодом 0.
+Коды выхода у обеих программ: 0 всё хорошо, 1 была ошибка (плохие строки в файле, нет файла, обрыв трубы и т. п.). Родитель возвращает 1, если ребёнок завершился не с 0.
+
+Путь к ребёнку фиксированный: `./child`. Поэтому `parent` запускается из каталога `lab2`, где `make` кладёт обе программы. Если запустить из другого места, `execl` вернёт ошибку `No such file or directory`, ребёнок напечатает её и выйдет с кодом 1.
 
 ## 4. Ключевые фрагменты кода
 
-### 4.1. Создание процесса с перенаправлением потоков (`src/process.c`)
+### 4.1. Создание ребёнка с перенаправлением ([process.c](process.c))
 
 ```c
-pid_t spawn_redirected(const char *path, int in_fd, int out_fd, int close_fd)
+pid_t start_child(const char *path, int in_fd, int out_fd, int unused_fd)
 {
     pid_t pid = fork();
-    if (pid != 0)
-        return pid; /* родитель: PID ребёнка или -1 */
-
-    /* --- дочерний процесс (до exec) --- */
-    if (dup2(in_fd, STDIN_FILENO) < 0) {
-        perror("child: dup2(stdin)");
-        _exit(127);
-    }
-    if (dup2(out_fd, STDOUT_FILENO) < 0) {
-        perror("child: dup2(stdout)");
-        _exit(127);
-    }
-    if (in_fd != STDIN_FILENO && close(in_fd) < 0)
-        perror("child: close(in_fd)");
-    if (out_fd != STDOUT_FILENO && close(out_fd) < 0)
-        perror("child: close(out_fd)");
-    if (close_fd >= 0 && close(close_fd) < 0)
-        perror("child: close(close_fd)");
-
-    char *const argv[] = {(char *)path, NULL};
-    execv(path, argv);
-    fprintf(stderr, "child: execv(%s): %s\n", path, strerror(errno));
-    _exit(127); /* _exit, а не exit: не сбрасываем унаследованные stdio-буферы родителя */
-}
-```
-
-`dup2` выполняется **между `fork` и `exec`**: дескрипторы наследуются через `exec`, и программа `child` получает готовые stdin/stdout. Сама она ничего не знает ни о файле, ни о канале. Ребёнок закрывает читающий конец `pipe1[0]`, иначе в нём остался бы лишний дескриптор канала.
-
-### 4.2. Родитель: закрытие лишних концов и пересылка данных (`src/parent.c`)
-
-```c
-    pid_t pid = spawn_redirected(child_path, file_fd, pipe1[1], pipe1[0]);
-    if (pid < 0) {
+    if (pid == -1) {
         perror("parent: fork");
-        close(file_fd); close(pipe1[0]); close(pipe1[1]);
-        return EXIT_FAILURE;
+        return -1;
     }
-    log_msg("parent", "created child PID=%d", (int)pid);
+    if (pid > 0)
+        return pid;
 
-    /* Если не закрыть pipe1[1], read() никогда не вернёт 0 — родитель зависнет. */
-    if (close(file_fd) < 0)
-        perror("parent: close(file)");
-    if (close(pipe1[1]) < 0)
-        perror("parent: close(pipe1[1])");
-
-    int relay_rc = relay_pipe(pipe1[0]);
-    if (close(pipe1[0]) < 0)
-        perror("parent: close(pipe1[0])");
-
-    int child_rc = wait_child(pid);
-```
-
-```c
-static int relay_pipe(int fd)
-{
-    char buf[4096];
-    for (;;) {
-        ssize_t r = read(fd, buf, sizeof(buf));
-        if (r < 0) {
-            if (errno == EINTR)
-                continue;
-            perror("parent: read(pipe1)");
-            return -1;
-        }
-        if (r == 0)
-            return 0; /* EOF: все писатели закрыли pipe1 */
-        if (write_all(STDOUT_FILENO, buf, (size_t)r) < 0) {
-            perror("parent: write(stdout)");
-            return -1;
-        }
+    /* Дальше выполняется только ребёнок. Программа в нём пока ещё parent. */
+    if (dup2(in_fd, STDIN_FILENO) == -1) {
+        perror("child: dup2 stdin");
+        _exit(1);
     }
+    if (dup2(out_fd, STDOUT_FILENO) == -1) {
+        perror("child: dup2 stdout");
+        _exit(1);
+    }
+
+    close_or_report(in_fd);
+    close_or_report(out_fd);
+    close_or_report(unused_fd);
+
+    execl(path, "child", (char *)NULL);
+
+    perror("child: execl");
+    _exit(1);
 }
 ```
 
-### 4.3. Ожидание ребёнка — защита от зомби (`src/process.c`)
+`dup2` делается между `fork` и `exec`: `exec` меняет программу, но таблица дескрипторов остаётся. Программа `child` просто читает 0 и пишет в 1 и не знает, что за ними файл и труба. Ребёнок закрывает конец чтения `pipe1[0]`, он ему не нужен.
+
+### 4.2. Закрытие концов трубы и чтение ([parent.c](parent.c))
+
+```c
+    /*
+     * Файл и конец записи нужны только ребёнку. read на трубе вернёт 0 (EOF)
+     * только когда закрыты ВСЕ концы записи. Если не закрыть pipe1[1] здесь,
+     * родитель сам держит конец записи открытым и навсегда зависнет в read.
+     */
+    close_or_report(file_fd);
+    close_or_report(pipe1[1]);
+
+    char buffer[256];
+    ssize_t count;
+    while ((count = read(pipe1[0], buffer, sizeof(buffer))) > 0) {
+        if (write(STDOUT_FILENO, buffer, count) != count) {
+            perror("parent: write");
+            exit_code = 1;
+            break;
+        }
+    }
+    if (count == -1) {
+        perror("parent: read");
+        exit_code = 1;
+    }
+
+    close_or_report(pipe1[0]);
+```
+
+Проверено: если закомментировать `close_or_report(pipe1[1])`, родитель печатает все суммы и висит, `ps` показывает его в состоянии `S` с `wchan = anon_pipe_read`, а ребёнка как зомби (`Z`), потому что до `waitpid` дело не доходит.
+
+### 4.3. Ожидание ребёнка ([process.c](process.c))
 
 ```c
 int wait_child(pid_t pid)
 {
-    int wstatus;
-    pid_t r;
-    do {
-        r = waitpid(pid, &wstatus, 0);
-    } while (r < 0 && errno == EINTR);
+    int status;
 
-    if (r < 0) { perror("parent: waitpid"); return -1; }
-    if (WIFEXITED(wstatus)) { ... return WEXITSTATUS(wstatus); }
-    if (WIFSIGNALED(wstatus)) { ... return 128 + WTERMSIG(wstatus); }
-    return -1;
+    if (waitpid(pid, &status, 0) == -1) {
+        perror("parent: waitpid");
+        return 1;
+    }
+
+    if (WIFEXITED(status)) {
+        fprintf(stderr, "[parent PID=%d] ребёнок PID=%d завершился с кодом %d\n",
+                getpid(), pid, WEXITSTATUS(status));
+        return WEXITSTATUS(status) == 0 ? 0 : 1;
+    }
+    if (WIFSIGNALED(status))
+        fprintf(stderr, "[parent PID=%d] ребёнок PID=%d убит сигналом %d\n",
+                getpid(), pid, WTERMSIG(status));
+    return 1;
 }
 ```
 
-### 4.4. Обработка обрыва канала (SIGPIPE)
+### 4.4. Краевые случаи
 
-```c
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = SIG_IGN;
-    if (sigemptyset(&sa.sa_mask) < 0 || sigaction(SIGPIPE, &sa, NULL) < 0) {
-        perror("child: sigaction(SIGPIPE)");
-        return CHILD_IO_ERROR;
-    }
-```
-
-Пусть читатель канала исчез (например, родитель завершил чтение досрочно). По умолчанию `write()` в такой канал убивает процесс сигналом SIGPIPE. Мы игнорируем сигнал, поэтому `write()` возвращает `-1/EPIPE`, а ребёнок пишет диагностику и завершается с кодом 2.
-
-### 4.5. Подсчёт суммы с проверкой краевых случаев (`src/sum.c`)
-
-```c
-        errno = 0;
-        long v = strtol(tok, &end, 10);
-        if (end == tok || *end != '\0') { *bad_token = tok; return SUM_BAD_TOKEN; }
-        if (errno == ERANGE || v < INT_MIN || v > INT_MAX) { *bad_token = tok; return SUM_RANGE; }
-        if (__builtin_add_overflow(sum, (int)v, &sum))
-            return SUM_OVERFLOW;
-```
+- **Числа** ([sum.c](sum.c)): `strtol` + проверка, что после числа идёт пробел или конец строки (`abc`, `2x` это ошибка), и что число влезает в `int`. Сумма копится в `long long`, в конце сравнивается с `INT_MIN`/`INT_MAX`. Пустые строки пропускаются, плохие строки пропускаются с сообщением, остальные считаются.
+- **Длина строки и память**: `getline` сам увеличивает буфер. Если памяти не хватит, `getline` вернёт -1 без признака конца файла, ребёнок напечатает ошибку и выйдет с кодом 1.
+- **Обрыв связи**: оба процесса делают `signal(SIGPIPE, SIG_IGN)`. Тогда запись в трубу без читателя не убивает процесс, а `write` возвращает ошибку `EPIPE`. Пример: `./parent | head -n 1`. `head` выходит, `write` родителя даёт `EPIPE`, родитель закрывает `pipe1[0]`, `write` ребёнка тоже даёт `EPIPE`, ребёнок выходит с кодом 1, родитель его дожидается.
+- **Имя файла**: пустая строка, конец ввода без строки, несуществующий файл дают сообщение и код 1.
 
 ## 5. Сборка и запуск
 
 ```sh
-make            # build/parent, build/child (флаги -Wall -Wextra -Wpedantic -Werror)
-make test       # автотесты
-make trace      # трасса strace -f в docs/strace.log
-./build/parent  # первой строкой ввести имя файла
+cd lab2
+make                               # gcc -Wall -Wextra -g, без предупреждений
+make test
+echo tests/data/basic.txt | ./parent
+./parent                           # или ввести имя файла руками
 ```
 
-На macOS/Windows всё запускается в контейнере Ubuntu из корня репозитория: `./linux.sh make -C lab2 test`.
+На Mac из корня репозитория: `./linux.sh make -C lab2 test` или `./linux.sh` и дальше команды внутри контейнера.
 
-## 6. Результаты работы
+## 6. Результаты
 
-### 6.1. Демонстрация (PID родителя и ребёнка видны в выводе) — [docs/run.log](docs/run.log)
+### 6.1. Запуск ([docs/run.log](docs/run.log))
 
 ```
-$ cat tests/data/basic.txt
-1 2 3
-10 20 30 40
--5 5
-42
-
-$ ./build/parent
-tests/data/basic.txt   <- ввод пользователя
-[parent PID=9] created child PID=10
-[child PID=10] started, PPID=9
-[child PID=10] finished, 4 line(s) processed
+$ echo tests/data/basic.txt | ./parent
+[parent PID=1534] запущен, жду имя файла
+[parent PID=1534] создан ребёнок PID=1535
+[child PID=1535] запущен, родитель PID=1534
+[child PID=1535] обработано строк: 4
 6
 100
 0
 42
-[parent PID=9] child PID=10 exited with code 0
-exit code: 0
+[parent PID=1534] ребёнок PID=1535 завершился с кодом 0
+код возврата: 0
 ```
 
-Строки `[... PID=...]` выводятся в stderr, суммы — в stdout родителя. Порядок строк из разных процессов меняется от запуска к запуску, потому что процессы работают параллельно.
+Файл `basic.txt`: `1 2 3`, `10 20 30 40`, `-5 5`, `42`. Порядок строк из stderr и stdout от запуска к запуску разный: процессы работают параллельно.
 
-### 6.2. Краевые случаи
+Файл с ошибками `edge.txt` (пустая строка, табуляции, `abc 1`, `1 2x`, `2147483647 1`, `2147483648`, `-2147483648 0`, последняя строка `100` без перевода строки):
 
 ```
-$ cat tests/data/edge.txt
-1 2 3
-                                  <- пустая строка
-   7    8	9                     <- лишние пробелы и табуляция
-abc 1
-1 2x
-2147483647 1
-2147483648
--2147483648 0
-100
-
-[parent PID=13] created child PID=14
-[child PID=14] started, PPID=13
-[child PID=14] line 4: not an integer: 'abc'
-[child PID=14] line 5: not an integer: '2x'
 6
+child: не целое число: abc
+[child PID=1539] строка 4 пропущена
+child: не целое число: 2x
+[child PID=1539] строка 5 пропущена
+child: сумма не влезает в int: 2147483648
+[child PID=1539] строка 6 пропущена
+child: число не влезает в int: 2147483648
+[child PID=1539] строка 7 пропущена
+[child PID=1539] обработано строк: 9
 24
-[child PID=14] line 6: sum overflows int
-[child PID=14] line 7: number out of int range: '2147483648'
-[child PID=14] finished, 9 line(s) processed
 -2147483648
 100
-[parent PID=13] child PID=14 exited with code 1
-
-$ ./build/parent  (ввод: no_such_file.txt)
-parent: open(no_such_file.txt): No such file or directory
-exit code: 1
+[parent PID=1538] ребёнок PID=1539 завершился с кодом 1
 ```
 
-### 6.3. Автотесты — `make test`
+### 6.2. Тесты (`make test`)
 
 ```
-PASS  basic sums
-PASS  edge cases
-PASS  empty file
-PASS  no trailing newline
-PASS  file name with spaces
-PASS  missing file
-PASS  empty file name
-PASS  200k numbers in a line
-PASS  broken pipe handled (child exits with code 2, no crash)
-ALL TESTS PASSED
+OK    обычный файл
+OK    пустые строки, мусор, выход за int
+OK    несуществующий файл
+OK    пустое имя файла
+OK    обрыв трубы: оба получили EPIPE, ребёнок дождан
+ВСЕ ТЕСТЫ ПРОЙДЕНЫ
 ```
 
-Тест «broken pipe» запускает `./build/parent | head -n 1`, подавая файл из 300 000 строк. После первой строки `head` закрывает канал, родитель получает `EPIPE` и закрывает pipe1. Затем ребёнок тоже получает `EPIPE` и завершается с кодом 2. Ни один процесс не падает и не зависает, родитель дожидается ребёнка.
+### 6.3. Трасса ([docs/strace.log](docs/strace.log))
 
-### 6.4. Утечки памяти и дескрипторов — valgrind ([docs/valgrind.log](docs/valgrind.log))
-
-`valgrind --leak-check=full --trace-children=yes --track-fds=yes` на `edge.txt`, для обоих процессов:
-
-```
-==19== FILE DESCRIPTORS: 3 open (3 std) at exit.
-==19== All heap blocks were freed -- no leaks are possible
-==19== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==20== FILE DESCRIPTORS: 3 open (3 std) at exit.
-==20== All heap blocks were freed -- no leaks are possible
-==20== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```sh
+echo tests/data/basic.txt | strace -f -o docs/strace.log \
+    -e trace=openat,pipe2,clone,dup2,dup3,execve,read,write,close,wait4 ./parent
 ```
 
-После завершения в системе нет зомби-процессов (`ps -eo stat | grep Z` — пусто).
-
-### 6.5. Трасса системных вызовов — `make trace` ([docs/strace.log](docs/strace.log))
-
-Фрагмент без загрузки библиотек (13 — родитель, 14 — ребёнок):
+Главное из трассы (1659 родитель, 1660 ребёнок, загрузка libc и строки `unfinished/resumed` убраны):
 
 ```
-13 execve("./build/parent", ["./build/parent"], ...)              = 0
-13 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, ...}, NULL, 8)       = 0
-13 read(0, "tests/data/basic.txt\n", 4096)                         = 21     # имя файла
-13 openat(AT_FDCWD, "tests/data/basic.txt", O_RDONLY)              = 3      # open()
-13 pipe2([4, 5], 0)                                                = 0      # pipe()
-13 clone(child_stack=NULL, flags=...|SIGCHLD, ...)                 = 14     # fork()
-14 dup3(3, 0, 0)                                                   = 0      # dup2(file, stdin)
-13 close(5)                                                        = 0      # родитель закрыл запись
-14 dup3(5, 1, 0)                                                   = 1      # dup2(pipe1[1], stdout)
-14 close(5) / close(4)                                             = 0
-14 execve("/work/lab2/build/child", ["/work/lab2/build/child"], ...) = 0
-14 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, ...}, NULL, 8)       = 0
-14 read(0, "1 2 3\n10 20 30 40\n-5 5\n42\n", 4096)                  = 26     # stdin = файл
-14 write(1, "6\n", 2)                                              = 2      # stdout = pipe1
-13 read(4, "6\n", 4096)                                            = 2      # родитель читает pipe1
-13 write(1, "6\n", 2)                                              = 2      # ... и печатает
-   ...
-14 read(0, "", 4096)                                               = 0      # EOF файла
-14 exit_group(0)                                                   = ?
-13 read(4, "", 4096)                                               = 0      # EOF канала
-13 close(4)                                                        = 0
-13 --- SIGCHLD {si_pid=14, si_status=0, ...} ---
-13 wait4(14, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL)    = 14     # waitpid()
-13 exit_group(0)                                                   = ?
+1659 read(0, "tests/data/basic.txt\n", 4096) = 21
+1659 openat(AT_FDCWD, "tests/data/basic.txt", O_RDONLY) = 3
+1659 pipe2([4, 5], 0)                  = 0
+1659 clone(...SIGCHLD...)              = 1660
+1659 close(3) = 0;  close(5) = 0         родитель закрыл файл и конец записи
+1660 dup2(3, 0) = 0;  dup2(5, 1) = 1     ребёнок: stdin = файл, stdout = труба
+1660 close(3); close(5); close(4)
+1660 execve("./child", ["child"], ...) = 0
+1660 read(0, "1 2 3\n10 20 30 40\n-5 5\n42\n", 4096) = 26
+1660 write(1, "6\n", 2)                = 2
+1659 read(4, "6\n", 256)               = 2
+1659 write(1, "6\n", 2)                = 2
+...
+1660 read(0, "", 4096)                 = 0   конец файла
+1660 +++ exited with 0 +++
+1659 read(4, "", 256)                  = 0   конец трубы
+1659 close(4)                          = 0
+1659 wait4(1660, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 1660
 ```
 
-Ядро aarch64 не имеет отдельных `dup2`, `pipe`, `fork`, `open`, поэтому glibc вызывает `dup3`, `pipe2`, `clone`, `openat`. На x86-64 в трассе будут `dup2` и `pipe`. Видно, что вызовы `write` ребёнка и `read` родителя чередуются: процессы работают одновременно, а канал служит буфером между ними.
+Трасса снята на x86-64, поэтому видно `dup2`; на aarch64 (Docker на Mac) вместо него будет `dup3`. `fork` виден как `clone`, `pipe` как `pipe2`, `open` как `openat`, `waitpid` как `wait4`. Вызовы `write` ребёнка и `read` родителя чередуются: процессы работают одновременно.
+
+### 6.4. Память и дескрипторы ([docs/valgrind.log](docs/valgrind.log))
+
+`echo tests/data/edge.txt | valgrind --leak-check=full --trace-children=yes --track-fds=yes ./parent`, у обоих процессов:
+
+```
+FILE DESCRIPTORS: 3 open (3 std) at exit.
+All heap blocks were freed -- no leaks are possible
+ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+После завершения `ps -eo pid,ppid,stat,comm | grep -E "parent|child"` ничего не показывает: зомби нет.
 
 ## 7. Выводы
 
-1. Написаны две программы, `parent` и `child`. Они обмениваются данными через неименованный канал, как требует вариант 6: stdin ребёнка подменён файлом, stdout ребёнка — каналом.
-2. Перенаправление потоков сделано через `dup2()` между `fork()` и `execv()`. Дескрипторы наследуются через `exec`, поэтому дочерняя программа работает с обычными stdin/stdout.
-3. Для корректного EOF нужно закрывать неиспользуемые концы канала в обоих процессах. Если родитель не закроет `pipe1[1]`, он навсегда заблокируется в `read()`.
-4. Все системные вызовы проверяются на ошибки (`perror`/`strerror`). Отдельно обработаны `EINTR`, частичная запись, обрыв канала (`SIGPIPE`/`EPIPE`), отсутствующий файл, некорректные числа, выход за диапазон `int` и переполнение суммы.
-5. Ресурсы освобождаются: valgrind не находит утечек памяти и открытых дескрипторов, ребёнок всегда дожидается через `waitpid`, зомби не остаётся.
+1. Написаны две программы, `parent` и `child`, которые обмениваются данными через неименованный канал. stdin ребёнка подменён файлом, stdout каналом.
+2. Перенаправление делается через `dup2` между `fork` и `exec`. Таблица дескрипторов переживает `exec`, поэтому `child` работает с обычными 0 и 1.
+3. Лишние концы трубы нужно закрывать в обоих процессах. Если родитель не закроет `pipe1[1]`, `read` никогда не вернёт 0 и родитель зависнет; это проверено.
+4. Каждый системный вызов проверяется, ошибка печатается через `perror`. Обработаны мусор в строках, выход за `int`, отсутствующий файл и обрыв трубы (`SIGPIPE` игнорируется, `write` даёт `EPIPE`).
+5. Родитель всегда ждёт ребёнка через `waitpid`, valgrind не нашёл утечек памяти и незакрытых дескрипторов.

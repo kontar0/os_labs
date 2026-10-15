@@ -1,0 +1,46 @@
+strace: Process 427 attached
+strace: Process 428 attached
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 76.19    0.001101         367         3         1 wait4
+  5.88    0.000085           3        27         2 close
+  4.15    0.000060           5        12           brk
+  3.25    0.000047           5         9           read
+  2.70    0.000039          13         3           write
+  1.94    0.000028           2        13           fstat
+  1.59    0.000023           4         5           munmap
+  1.25    0.000018           1        12         1 openat
+  1.11    0.000016           8         2         1 fadvise64
+  0.97    0.000014           0        37           mmap
+  0.97    0.000014           3         4           getrandom
+  0.00    0.000000           0         1           lseek
+  0.00    0.000000           0        13           mprotect
+  0.00    0.000000           0        31           rt_sigaction
+  0.00    0.000000           0        18           rt_sigprocmask
+  0.00    0.000000           0         1           rt_sigreturn
+  0.00    0.000000           0         5         5 ioctl
+  0.00    0.000000           0         8           pread64
+  0.00    0.000000           0        12         4 access
+  0.00    0.000000           0         4           dup2
+  0.00    0.000000           0         5           getpid
+  0.00    0.000000           0         1         1 getpeername
+  0.00    0.000000           0         2           clone
+  0.00    0.000000           0         4           execve
+  0.00    0.000000           0         1           uname
+  0.00    0.000000           0         6           fcntl
+  0.00    0.000000           0         9           getuid
+  0.00    0.000000           0         9           getgid
+  0.00    0.000000           0         9           geteuid
+  0.00    0.000000           0         9           getegid
+  0.00    0.000000           0         3           getppid
+  0.00    0.000000           0         1           getpgrp
+  0.00    0.000000           0         4           arch_prctl
+  0.00    0.000000           0         4           set_tid_address
+  0.00    0.000000           0        71        48 newfstatat
+  0.00    0.000000           0         1           unlinkat
+  0.00    0.000000           0         6           set_robust_list
+  0.00    0.000000           0         1           pipe2
+  0.00    0.000000           0         5           prlimit64
+  0.00    0.000000           0         4           rseq
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.001445           3       375        63 total

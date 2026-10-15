@@ -4,17 +4,17 @@ $ cat tests/data/basic.txt
 -5 5
 42
 
-$ ./build/parent
-tests/data/basic.txt   <- ввод пользователя
-[parent PID=9] created child PID=10
-[child PID=10] started, PPID=9
-[child PID=10] finished, 4 line(s) processed
+$ echo tests/data/basic.txt | ./parent
+[parent PID=1534] запущен, жду имя файла
+[parent PID=1534] создан ребёнок PID=1535
+[child PID=1535] запущен, родитель PID=1534
+[child PID=1535] обработано строк: 4
 6
 100
 0
 42
-[parent PID=9] child PID=10 exited with code 0
-exit code: 0
+[parent PID=1534] ребёнок PID=1535 завершился с кодом 0
+код возврата: 0
 
 $ cat tests/data/edge.txt
 1 2 3
@@ -27,21 +27,30 @@ abc 1
 -2147483648 0
 100
 
-$ ./build/parent  (ввод: tests/data/edge.txt)
-[parent PID=13] created child PID=14
-[child PID=14] started, PPID=13
-[child PID=14] line 4: not an integer: 'abc'
-[child PID=14] line 5: not an integer: '2x'
+$ echo tests/data/edge.txt | ./parent
+[parent PID=1538] запущен, жду имя файла
+[parent PID=1538] создан ребёнок PID=1539
+[child PID=1539] запущен, родитель PID=1538
 6
+child: не целое число: abc
+[child PID=1539] строка 4 пропущена
+child: не целое число: 2x
+[child PID=1539] строка 5 пропущена
+child: сумма не влезает в int: 2147483648
+[child PID=1539] строка 6 пропущена
+child: число не влезает в int: 2147483648
+[child PID=1539] строка 7 пропущена
+[child PID=1539] обработано строк: 9
 24
-[child PID=14] line 6: sum overflows int
-[child PID=14] line 7: number out of int range: '2147483648'
-[child PID=14] finished, 9 line(s) processed
 -2147483648
 100
-[parent PID=13] child PID=14 exited with code 1
-exit code: 1
+[parent PID=1538] ребёнок PID=1539 завершился с кодом 1
+код возврата: 1
 
-$ ./build/parent  (ввод: no_such_file.txt)
-parent: open(no_such_file.txt): No such file or directory
-exit code: 1
+$ echo no_such_file.txt | ./parent
+[parent PID=1541] запущен, жду имя файла
+parent: open: No such file or directory
+код возврата: 1
+
+$ ps -eo pid,ppid,stat,comm | grep -E "parent|child"   # после завершения: ни процессов, ни зомби
+(вывод пустой)

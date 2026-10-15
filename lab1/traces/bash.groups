@@ -1,0 +1,18 @@
+1. Управление процессами — 64 вызовов:
+    wait4(9, err 4) clone(5) execve(6) prlimit64(8) rseq(6) set_robust_list(11) getpid(8) getppid(3) set_tid_address(6) getpgid(1) uname(1)
+
+2. Файлы и дескрипторы — 296 вызовов:
+    close(60, err 2) newfstatat(55, err 18) openat(29, err 2) read(31) fcntl(19, err 1) lseek(14) ioctl(16, err 16) fstat(29) dup3(10) faccessat(19, err 7) unlinkat(1) write(5) statfs(2, err 2) chdir(1) fadvise64(2, err 1) lgetxattr(1, err 1) listxattr(1) statx(1)
+
+3. Межпроцессное взаимодействие — 13 вызовов:
+    connect(6, err 6) socket(6) pipe2(1)
+
+4. Сигналы — 115 вызовов:
+    rt_sigprocmask(54) rt_sigaction(57) rt_sigreturn(4)
+
+5. Управление памятью — 121 вызовов:
+    mmap(49) mprotect(30) munmap(24) brk(18)
+
+6. Окружение, время, идентификация — 59 вызовов:
+    getegid(13) geteuid(13) getuid(13) getgid(13) getrandom(6) clock_nanosleep(1)
+

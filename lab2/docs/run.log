@@ -1,0 +1,47 @@
+$ cat tests/data/basic.txt
+1 2 3
+10 20 30 40
+-5 5
+42
+
+$ ./build/parent
+tests/data/basic.txt   <- ввод пользователя
+[parent PID=9] created child PID=10
+[child PID=10] started, PPID=9
+[child PID=10] finished, 4 line(s) processed
+6
+100
+0
+42
+[parent PID=9] child PID=10 exited with code 0
+exit code: 0
+
+$ cat tests/data/edge.txt
+1 2 3
+
+   7    8	9   
+abc 1
+1 2x
+2147483647 1
+2147483648
+-2147483648 0
+100
+
+$ ./build/parent  (ввод: tests/data/edge.txt)
+[parent PID=13] created child PID=14
+[child PID=14] started, PPID=13
+[child PID=14] line 4: not an integer: 'abc'
+[child PID=14] line 5: not an integer: '2x'
+6
+24
+[child PID=14] line 6: sum overflows int
+[child PID=14] line 7: number out of int range: '2147483648'
+[child PID=14] finished, 9 line(s) processed
+-2147483648
+100
+[parent PID=13] child PID=14 exited with code 1
+exit code: 1
+
+$ ./build/parent  (ввод: no_such_file.txt)
+parent: open(no_such_file.txt): No such file or directory
+exit code: 1

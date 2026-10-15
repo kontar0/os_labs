@@ -1,0 +1,83 @@
+57    execve("/usr/bin/bash", ["bash", "-c", "echo hello > out.txt; cat out.tx"...], 0xffffe61a1298 /* 9 vars */) = 0
+57    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "/dev/tty", O_RDWR|O_NONBLOCK) = 3
+57    close(3)                          = 0
+57    close(3)                          = 0
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "out.txt", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+57    fcntl(1, F_GETFD)                 = 0
+57    fcntl(1, F_DUPFD, 10)             = 10
+57    fcntl(1, F_GETFD)                 = 0
+57    fcntl(10, F_SETFD, FD_CLOEXEC)    = 0
+57    dup3(3, 1, 0)                     = 1
+57    close(3)                          = 0
+57    write(1, "hello\n", 6)            = 6
+57    dup3(10, 1, 0)                    = 1
+57    fcntl(10, F_GETFD)                = 0x1 (flags FD_CLOEXEC)
+57    close(10)                         = 0
+57    fcntl(0, F_GETFD)                 = 0
+57    pipe2([3, 4], 0)                  = 0
+57    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffffb96340f0) = 58
+57    close(4)                          = 0
+57    close(4)                          = -1 EBADF (Bad file descriptor)
+57    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffffb96340f0) = 59
+57    close(3)                          = 0
+58    close(3 <unfinished ...>
+57    wait4(-1,  <unfinished ...>
+58    <... close resumed>)              = 0
+58    dup3(4, 1, 0 <unfinished ...>
+59    dup3(3, 0, 0 <unfinished ...>
+58    <... dup3 resumed>)               = 1
+59    <... dup3 resumed>)               = 0
+58    close(4 <unfinished ...>
+59    close(3 <unfinished ...>
+58    <... close resumed>)              = 0
+59    <... close resumed>)              = 0
+59    execve("/usr/bin/wc", ["wc", "-l"], 0xaaaacacea7e0 /* 9 vars */ <unfinished ...>
+58    execve("/usr/bin/cat", ["cat", "out.txt"], 0xaaaacacea7e0 /* 9 vars */ <unfinished ...>
+59    <... execve resumed>)             = 0
+58    <... execve resumed>)             = 0
+59    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+58    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+59    close(3)                          = 0
+59    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+58    close(3)                          = 0
+58    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+59    close(3)                          = 0
+58    close(3)                          = 0
+58    openat(AT_FDCWD, "out.txt", O_RDONLY) = 3
+58    write(1, "hello\n", 6)            = 6
+58    close(3)                          = 0
+58    close(1)                          = 0
+58    close(2)                          = 0
+59    write(1, "1\n", 2 <unfinished ...>
+58    +++ exited with 0 +++
+57    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 58
+59    <... write resumed>)              = 2
+57    wait4(-1,  <unfinished ...>
+59    close(0)                          = 0
+59    close(1)                          = 0
+59    close(2)                          = 0
+59    +++ exited with 0 +++
+57    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 59
+57    close(3)                          = -1 EBADF (Bad file descriptor)
+57    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=58, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+57    wait4(-1, 0xffffddf78420, WNOHANG, NULL) = -1 ECHILD (No child processes)
+57    execve("/usr/bin/rm", ["rm", "out.txt"], 0xaaaacacee220 /* 9 vars */) = 0
+57    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+57    close(3)                          = 0
+57    close(0)                          = 0
+57    close(1)                          = 0
+57    close(2)                          = 0
+57    +++ exited with 0 +++

@@ -1,0 +1,22 @@
+out1.txt
+out2.txt
+Hello world
+Привет, мир!
+Операционные системы
+process and pipe
+Каждая строка уходит в pipe1 или pipe2
+fork, dup2, exec
+Гласные удаляются
+The quick brown fox
+Лабораторная работа номер два
+AEIOU aeiou АЕЁИОУЫЭЮЯ
+Дети читают из своих труб
+child1 и child2 одна программа
+waitpid забирает код выхода
+Нет зомби после завершения
+stdin child подменён трубой
+stdout child подменён файлом
+Вероятность восемьдесят процентов
+Конец ввода это Ctrl+D
+signal SIGPIPE ignored
+Последняя строка примера

@@ -1,61 +1,190 @@
-1659  execve("./parent", ["./parent"], 0x7ffe239ce398 /* 163 vars */) = 0
-1659  openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-1659  close(3)                          = 0
-1659  openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-1659  read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
-1659  close(3)                          = 0
-1659  write(2, "[parent PID=1659] \320\267\320\260\320\277\321\203\321\211\320\265\320\275"..., 59) = 59
-1659  read(0, "tests/data/basic.txt\n", 4096) = 21
-1659  openat(AT_FDCWD, "tests/data/basic.txt", O_RDONLY) = 3
-1659  pipe2([4, 5], 0)                  = 0
-1659  clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f344bf45a10) = 1660
-1659  write(2, "[parent PID=1659] \321\201\320\276\320\267\320\264\320\260\320\275 \321"..., 55) = 55
-1659  close(3 <unfinished ...>
-1660  dup2(3, 0 <unfinished ...>
-1659  <... close resumed>)              = 0
-1660  <... dup2 resumed>)               = 0
-1659  close(5 <unfinished ...>
-1660  dup2(5, 1 <unfinished ...>
-1659  <... close resumed>)              = 0
-1660  <... dup2 resumed>)               = 1
-1659  read(4,  <unfinished ...>
-1660  close(3)                          = 0
-1660  close(5)                          = 0
-1660  close(4)                          = 0
-1660  execve("./child", ["child"], 0x7ffd0b3610d8 /* 163 vars */) = 0
-1660  openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-1660  close(3)                          = 0
-1660  openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-1660  read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
-1660  close(3)                          = 0
-1660  write(2, "[child PID=1660] \320\267\320\260\320\277\321\203\321\211\320\265\320\275,"..., 59) = 59
-1660  read(0, "1 2 3\n10 20 30 40\n-5 5\n42\n", 4096) = 26
-1660  write(1, "6\n", 2 <unfinished ...>
-1659  <... read resumed>"6\n", 256)     = 2
-1660  <... write resumed>)              = 2
-1659  write(1, "6\n", 2 <unfinished ...>
-1660  write(1, "100\n", 4 <unfinished ...>
-1659  <... write resumed>)              = 2
-1660  <... write resumed>)              = 4
-1659  read(4,  <unfinished ...>
-1660  write(1, "0\n", 2 <unfinished ...>
-1659  <... read resumed>"100\n", 256)   = 4
-1660  <... write resumed>)              = 2
-1659  write(1, "100\n", 4 <unfinished ...>
-1660  write(1, "42\n", 3 <unfinished ...>
-1659  <... write resumed>)              = 4
-1660  <... write resumed>)              = 3
-1659  read(4,  <unfinished ...>
-1660  read(0,  <unfinished ...>
-1659  <... read resumed>"0\n42\n", 256) = 5
-1660  <... read resumed>"", 4096)       = 0
-1659  write(1, "0\n42\n", 5)            = 5
-1659  read(4,  <unfinished ...>
-1660  write(2, "[child PID=1660] \320\276\320\261\321\200\320\260\320\261\320\276\321\202\320"..., 52) = 52
-1659  <... read resumed>"", 256)        = 0
-1660  +++ exited with 0 +++
-1659  --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=1660, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
-1659  close(4)                          = 0
-1659  wait4(1660, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 1660
-1659  write(2, "[parent PID=1659] \321\200\320\265\320\261\321\221\320\275\320\276\320\272"..., 79) = 79
-1659  +++ exited with 0 +++
+11    execve("./parent", ["./parent"], 0xffffd7ef3df8 /* 5 vars */) = 0
+11    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+11    close(3)                          = 0
+11    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+11    read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\360\206\2\0\0\0\0\0"..., 832) = 832
+11    close(3)                          = 0
+11    write(2, "[parent PID=11] \320\267\320\260\320\277\321\203\321\211\320\265\320\275, "..., 87) = 87
+11    read(0, "out1.txt\nout2.txt\nHello world\n\320\237"..., 4096) = 773
+11    openat(AT_FDCWD, "out1.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644) = 3
+11    openat(AT_FDCWD, "out2.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644) = 4
+11    pipe2([5, 6], 0)                  = 0
+11    pipe2([7, 8], 0)                  = 0
+11    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xffffa2c56fb0) = 12
+11    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD <unfinished ...>
+12    dup3(5, 0, 0 <unfinished ...>
+11    <... clone resumed>, child_tidptr=0xffffa2c56fb0) = 13
+12    <... dup3 resumed>)               = 0
+11    write(2, "[parent PID=11] \321\201\320\276\320\267\320\264\320\260\320\275\321\213 c"..., 62) = 62
+12    dup3(3, 1, 0 <unfinished ...>
+11    close(3 <unfinished ...>
+13    dup3(7, 0, 0 <unfinished ...>
+12    <... dup3 resumed>)               = 1
+11    <... close resumed>)              = 0
+11    close(4 <unfinished ...>
+13    <... dup3 resumed>)               = 0
+12    close(3 <unfinished ...>
+11    <... close resumed>)              = 0
+13    dup3(4, 1, 0 <unfinished ...>
+11    close(5 <unfinished ...>
+12    <... close resumed>)              = 0
+11    <... close resumed>)              = 0
+13    <... dup3 resumed>)               = 1
+11    close(7 <unfinished ...>
+12    close(4 <unfinished ...>
+11    <... close resumed>)              = 0
+13    close(3 <unfinished ...>
+12    <... close resumed>)              = 0
+13    <... close resumed>)              = 0
+12    close(5 <unfinished ...>
+11    write(8, "Hello world\n", 12 <unfinished ...>
+13    close(4 <unfinished ...>
+11    <... write resumed>)              = 12
+12    <... close resumed>)              = 0
+13    <... close resumed>)              = 0
+12    close(6 <unfinished ...>
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 1 -"..., 40 <unfinished ...>
+13    close(5 <unfinished ...>
+11    <... write resumed>)              = 40
+12    <... close resumed>)              = 0
+11    write(6, "\320\237\321\200\320\270\320\262\320\265\321\202, \320\274\320\270\321\200!\n", 22 <unfinished ...>
+13    <... close resumed>)              = 0
+11    <... write resumed>)              = 22
+12    close(7 <unfinished ...>
+13    close(6 <unfinished ...>
+12    <... close resumed>)              = 0
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 2 -"..., 40 <unfinished ...>
+13    <... close resumed>)              = 0
+11    <... write resumed>)              = 40
+12    close(8 <unfinished ...>
+11    write(6, "\320\236\320\277\320\265\321\200\320\260\321\206\320\270\320\276\320\275\320\275\321\213\320\265 \321\201\320\270\321\201\321"..., 40 <unfinished ...>
+13    close(7 <unfinished ...>
+11    <... write resumed>)              = 40
+12    <... close resumed>)              = 0
+13    <... close resumed>)              = 0
+12    execve("./child", ["child1"], 0xffffe4b64d58 /* 5 vars */ <unfinished ...>
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 3 -"..., 40 <unfinished ...>
+13    close(8 <unfinished ...>
+11    <... write resumed>)              = 40
+11    write(8, "process and pipe\n", 17 <unfinished ...>
+13    <... close resumed>)              = 0
+11    <... write resumed>)              = 17
+13    execve("./child", ["child2"], 0xffffe4b64d58 /* 5 vars */ <unfinished ...>
+12    <... execve resumed>)             = 0
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 4 -"..., 40) = 40
+11    write(6, "\320\232\320\260\320\266\320\264\320\260\321\217 \321\201\321\202\321\200\320\276\320\272\320\260 \321\203\321\205\320\276"..., 61) = 61
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 5 -"..., 40 <unfinished ...>
+13    <... execve resumed>)             = 0
+11    <... write resumed>)              = 40
+11    write(6, "fork, dup2, exec\n", 17) = 17
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 6 -"..., 40) = 40
+11    write(8, "\320\223\320\273\320\260\321\201\320\275\321\213\320\265 \321\203\320\264\320\260\320\273\321\217\321\216\321\202\321\201\321"..., 34) = 34
+12    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC <unfinished ...>
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 7 -"..., 40 <unfinished ...>
+12    <... openat resumed>)             = 3
+11    <... write resumed>)              = 40
+11    write(6, "The quick brown fox\n", 20) = 20
+13    openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC <unfinished ...>
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 8 -"..., 40 <unfinished ...>
+13    <... openat resumed>)             = 3
+11    <... write resumed>)              = 40
+11    write(6, "\320\233\320\260\320\261\320\276\321\200\320\260\321\202\320\276\321\200\320\275\320\260\321\217 \321\200\320\260\320\261\320"..., 56) = 56
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 9 -"..., 40) = 40
+12    close(3 <unfinished ...>
+11    write(6, "AEIOU aeiou \320\220\320\225\320\201\320\230\320\236\320\243\320\253\320\255\320\256\320\257"..., 33 <unfinished ...>
+12    <... close resumed>)              = 0
+11    <... write resumed>)              = 33
+13    close(3 <unfinished ...>
+12    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC <unfinished ...>
+13    <... close resumed>)              = 0
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 10 "..., 41 <unfinished ...>
+12    <... openat resumed>)             = 3
+11    <... write resumed>)              = 41
+13    openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC <unfinished ...>
+11    write(6, "\320\224\320\265\321\202\320\270 \321\207\320\270\321\202\320\260\321\216\321\202 \320\270\320\267 \321\201\320\262\320"..., 47 <unfinished ...>
+12    read(3,  <unfinished ...>
+11    <... write resumed>)              = 47
+13    <... openat resumed>)             = 3
+12    <... read resumed>"\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\360\206\2\0\0\0\0\0"..., 832) = 832
+13    read(3,  <unfinished ...>
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 11 "..., 41) = 41
+13    <... read resumed>"\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\360\206\2\0\0\0\0\0"..., 832) = 832
+11    write(6, "child1 \320\270 child2 \320\276\320\264\320\275\320\260 \320\277\321\200\320\276"..., 45) = 45
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 12 "..., 41) = 41
+11    write(6, "waitpid \320\267\320\260\320\261\320\270\321\200\320\260\320\265\321\202 \320\272\320\276\320\264 "..., 45) = 45
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 13 "..., 41) = 41
+11    write(8, "\320\235\320\265\321\202 \320\267\320\276\320\274\320\261\320\270 \320\277\320\276\321\201\320\273\320\265 \320\267\320"..., 50) = 50
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 14 "..., 41) = 41
+11    write(6, "stdin child \320\277\320\276\320\264\320\274\320\265\320\275\321\221\320\275 \321\202\321"..., 42) = 42
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 15 "..., 41) = 41
+11    write(8, "stdout child \320\277\320\276\320\264\320\274\320\265\320\275\321\221\320\275 \321\204"..., 43) = 43
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 16 "..., 41) = 41
+11    write(6, "\320\222\320\265\321\200\320\276\321\217\321\202\320\275\320\276\321\201\321\202\321\214 \320\262\320\276\321\201\320\265\320"..., 65) = 65
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 17 "..., 41) = 41
+13    close(3 <unfinished ...>
+12    close(3 <unfinished ...>
+11    write(6, "\320\232\320\276\320\275\320\265\321\206 \320\262\320\262\320\276\320\264\320\260 \321\215\321\202\320\276 Ctr"..., 36 <unfinished ...>
+13    <... close resumed>)              = 0
+11    <... write resumed>)              = 36
+12    <... close resumed>)              = 0
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 18 "..., 41) = 41
+11    write(6, "signal SIGPIPE ignored\n", 23) = 23
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 19 "..., 41) = 41
+11    write(6, "\320\237\320\276\321\201\320\273\320\265\320\264\320\275\321\217\321\217 \321\201\321\202\321\200\320\276\320\272\320\260 "..., 47) = 47
+11    write(2, "[parent PID=11] \321\201\321\202\321\200\320\276\320\272\320\260 20 "..., 41) = 41
+11    read(0, "", 4096)                 = 0
+11    close(6)                          = 0
+11    close(8)                          = 0
+11    wait4(12,  <unfinished ...>
+13    write(2, "[child2 PID=13] \320\267\320\260\320\277\321\203\321\211\320\265\320\275, "..., 56) = 56
+12    write(2, "[child1 PID=12] \320\267\320\260\320\277\321\203\321\211\320\265\320\275, "..., 56) = 56
+13    read(0, "Hello world\nprocess and pipe\n\320\223\320"..., 4096) = 156
+13    write(1, "Hll wrld\n", 9 <unfinished ...>
+12    read(0,  <unfinished ...>
+13    <... write resumed>)              = 9
+12    <... read resumed>"\320\237\321\200\320\270\320\262\320\265\321\202, \320\274\320\270\321\200!\n\320\236\320\277\320\265\321\200\320\260"..., 4096) = 599
+13    write(1, "prcss nd pp\n", 12 <unfinished ...>
+12    write(1, "\320\237\321\200\320\262\321\202, \320\274\321\200!\n", 16 <unfinished ...>
+13    <... write resumed>)              = 12
+13    write(1, "\320\223\320\273\321\201\320\275 \320\264\320\273\321\202\321\201\n", 18 <unfinished ...>
+12    <... write resumed>)              = 16
+13    <... write resumed>)              = 18
+12    write(1, "\320\277\321\200\321\206\320\275\320\275 \321\201\321\201\321\202\320\274\n", 20 <unfinished ...>
+13    write(1, "\320\235\321\202 \320\267\320\274\320\261 \320\277\321\201\320\273 \320\267\320\262\321\200\321\210\320\275\n", 30 <unfinished ...>
+12    <... write resumed>)              = 20
+13    <... write resumed>)              = 30
+12    write(1, "\320\232\320\266\320\264 \321\201\321\202\321\200\320\272 \321\205\320\264\321\202 \320\262 pp1 \320\273"..., 37 <unfinished ...>
+13    write(1, "stdt chld \320\277\320\264\320\274\320\275\320\275 \321\204\320\271\320\273\320\274\n", 30 <unfinished ...>
+12    <... write resumed>)              = 37
+13    <... write resumed>)              = 30
+12    write(1, "frk, dp2, xc\n", 13 <unfinished ...>
+13    read(0, "", 4096)                 = 0
+12    <... write resumed>)              = 13
+12    write(1, "Th qck brwn fx\n", 15 <unfinished ...>
+13    write(2, "[child2 PID=13] \320\276\320\261\321\200\320\260\320\261\320\276\321\202\320\260"..., 51 <unfinished ...>
+12    <... write resumed>)              = 15
+13    <... write resumed>)              = 51
+12    write(1, "\320\233\320\261\321\200\321\202\321\200\320\275 \321\200\320\261\321\202 \320\275\320\274\321\200 \320\264\320\262\n", 32) = 32
+12    write(1, "  \n", 3)               = 3
+13    +++ exited with 0 +++
+11    <... wait4 resumed>0xffffe4b62b14, 0, NULL) = ? ERESTARTSYS (To be restarted if SA_RESTART is set)
+12    write(1, "\320\224\321\202 \321\207\321\202\321\202 \320\267 \321\201\320\262\321\205 \321\202\321\200\320\261\n", 29 <unfinished ...>
+11    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=13, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+11    wait4(12,  <unfinished ...>
+12    <... write resumed>)              = 29
+12    write(1, "chld1  chld2 \320\264\320\275 \320\277\321\200\320\263\321\200\320\274\320\274\n", 31) = 31
+12    write(1, "wtpd \320\267\320\261\321\200\321\202 \320\272\320\264 \320\262\321\205\320\264\n", 26) = 26
+12    write(1, "stdn chld \320\277\320\264\320\274\320\275\320\275 \321\202\321\200\320\261\320\271\n", 30) = 30
+12    write(1, "\320\222\321\200\321\202\320\275\321\201\321\202\321\214 \320\262\321\201\320\274\321\214\320\264\321\201\321\202 \320\277"..., 43) = 43
+12    write(1, "\320\232\320\275\321\206 \320\262\320\262\320\264 \321\202 Ctrl+D\n", 24) = 24
+12    write(1, "sgnl SGPP gnrd\n", 15)  = 15
+12    write(1, "\320\237\321\201\320\273\320\264\320\275 \321\201\321\202\321\200\320\272 \320\277\321\200\320\274\321\200\n", 29) = 29
+12    read(0, "", 4096)                 = 0
+12    write(2, "[child1 PID=12] \320\276\320\261\321\200\320\260\320\261\320\276\321\202\320\260"..., 52) = 52
+12    +++ exited with 0 +++
+11    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 12
+11    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=12, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+11    write(2, "[parent PID=11] \321\200\320\265\320\261\321\221\320\275\320\276\320\272 P"..., 75) = 75
+11    wait4(13, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 13
+11    write(2, "[parent PID=11] \321\200\320\265\320\261\321\221\320\275\320\276\320\272 P"..., 75) = 75
+11    +++ exited with 0 +++

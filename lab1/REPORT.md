@@ -73,17 +73,21 @@ strace -f -y -o bash.log bash -c 'echo hello > out.txt; cat out.txt | wc -l; rm 
 
 ## 5. Сквозной профиль
 
-### ЛР2: процессы и каналы ([../lab2/docs/strace.log](../lab2/docs/strace.log))
+### ЛР2: процессы и каналы, вариант 19 ([../lab2/docs/strace.log](../lab2/docs/strace.log))
+
+Родитель (PID 11) и два ребёнка (12 — child1, 13 — child2), Linux aarch64:
 
 | Вызов в трассе | В коде | Зачем |
 |---|---|---|
-| `openat(..."tests/data/basic.txt", O_RDONLY) = 3` | `open` | файл с числами |
-| `pipe2([4, 5], 0)` | `pipe` | pipe1 |
-| `clone(...) = 1660` | `fork` | создать ребёнка |
-| `dup2(3, 0)`, `dup2(5, 1)` | `dup2` | stdin ребёнка = файл, stdout = pipe1 |
-| `execve("./child", ...)` | `execl` | запустить программу child |
-| `write(1, "6\n")` / `read(4, "6\n")` | `write` / `read` | ребёнок пишет сумму, родитель читает |
-| `wait4(1660, ...)` | `waitpid` | дождаться ребёнка |
+| `openat("out1.txt", O_WRONLY\|O_CREAT\|O_TRUNC) = 3`, `... = 4` | `open` | файлы для child1 и child2 |
+| `pipe2([5, 6], 0)`, `pipe2([7, 8], 0)` | `pipe` | pipe1 и pipe2 |
+| `clone(...) = 12`, `clone(...) = 13` | `fork` | создать двух детей |
+| `dup3(5, 0, 0)`, `dup3(3, 1, 0)` | `dup2` | child1: stdin = pipe1, stdout = файл 1 |
+| `close(3..8)` в детях | `close` | закрыть все исходные номерки, в том числе чужой конец записи |
+| `execve("./child", ["child1"], ...)` | `execl` | запустить программу child |
+| `write(6, ...)` / `write(8, ...)` | `write` | родитель шлёт строку в pipe1 или pipe2 |
+| `read(0, ...) = 0` у ребёнка | `getline` | EOF после того, как родитель закрыл концы записи |
+| `wait4(12, ...)`, `wait4(13, ...)` | `waitpid` | дождаться обоих детей |
 
 ## 6. Выводы
 

@@ -1,56 +1,81 @@
-$ cat tests/data/basic.txt
-1 2 3
-10 20 30 40
--5 5
-42
+$ cat tests/data/sample.txt
+out1.txt
+out2.txt
+Hello world
+Привет, мир!
+Операционные системы
+process and pipe
+Каждая строка уходит в pipe1 или pipe2
+fork, dup2, exec
+Гласные удаляются
+The quick brown fox
+Лабораторная работа номер два
+AEIOU aeiou АЕЁИОУЫЭЮЯ
+Дети читают из своих труб
+child1 и child2 одна программа
+waitpid забирает код выхода
+Нет зомби после завершения
+stdin child подменён трубой
+stdout child подменён файлом
+Вероятность восемьдесят процентов
+Конец ввода это Ctrl+D
+signal SIGPIPE ignored
+Последняя строка примера
 
-$ echo tests/data/basic.txt | ./parent
-[parent PID=1534] запущен, жду имя файла
-[parent PID=1534] создан ребёнок PID=1535
-[child PID=1535] запущен, родитель PID=1534
-[child PID=1535] обработано строк: 4
-6
-100
-0
-42
-[parent PID=1534] ребёнок PID=1535 завершился с кодом 0
+$ ./parent < tests/data/sample.txt
+[parent PID=9] запущен, жду имена файлов для child1 и child2
+[parent PID=9] созданы child1 PID=10 и child2 PID=11
+[parent PID=9] строка 1 -> pipe1
+[parent PID=9] строка 2 -> pipe1
+[parent PID=9] строка 3 -> pipe1
+[child1 PID=10] запущен, родитель PID=9
+[child2 PID=11] запущен, родитель PID=9
+[parent PID=9] строка 4 -> pipe1
+[parent PID=9] строка 5 -> pipe1
+[parent PID=9] строка 6 -> pipe2
+[parent PID=9] строка 7 -> pipe2
+[parent PID=9] строка 8 -> pipe2
+[parent PID=9] строка 9 -> pipe2
+[parent PID=9] строка 10 -> pipe1
+[parent PID=9] строка 11 -> pipe1
+[parent PID=9] строка 12 -> pipe1
+[parent PID=9] строка 13 -> pipe1
+[parent PID=9] строка 14 -> pipe1
+[parent PID=9] строка 15 -> pipe1
+[parent PID=9] строка 16 -> pipe1
+[parent PID=9] строка 17 -> pipe1
+[parent PID=9] строка 18 -> pipe1
+[parent PID=9] строка 19 -> pipe1
+[parent PID=9] строка 20 -> pipe1
+[child2 PID=11] обработано строк: 4
+[child1 PID=10] обработано строк: 16
+[parent PID=9] ребёнок PID=10 завершился с кодом 0
+[parent PID=9] ребёнок PID=11 завершился с кодом 0
 код возврата: 0
 
-$ cat tests/data/edge.txt
-1 2 3
+$ cat out1.txt   # результат child1 (pipe1, ~80% строк)
+Hll wrld
+Првт, мр!
+прцнн сстм
+prcss nd pp
+Кжд стрк хдт в pp1 л pp2
+  
+Дт чтт з свх трб
+chld1  chld2 дн пргрмм
+wtpd збрт кд вхд
+Нт змб псл звршн
+stdn chld пдмнн трбй
+stdt chld пдмнн фйлм
+Вртнсть всмьдст прцнтв
+Кнц ввд т Ctrl+D
+sgnl SGPP gnrd
+Пслдн стрк прмр
 
-   7    8	9   
-abc 1
-1 2x
-2147483647 1
-2147483648
--2147483648 0
-100
+$ cat out2.txt   # результат child2 (pipe2, ~20% строк)
+frk, dp2, xc
+Глсн длтс
+Th qck brwn fx
+Лбртрн рбт нмр дв
 
-$ echo tests/data/edge.txt | ./parent
-[parent PID=1538] запущен, жду имя файла
-[parent PID=1538] создан ребёнок PID=1539
-[child PID=1539] запущен, родитель PID=1538
-6
-child: не целое число: abc
-[child PID=1539] строка 4 пропущена
-child: не целое число: 2x
-[child PID=1539] строка 5 пропущена
-child: сумма не влезает в int: 2147483648
-[child PID=1539] строка 6 пропущена
-child: число не влезает в int: 2147483648
-[child PID=1539] строка 7 пропущена
-[child PID=1539] обработано строк: 9
-24
--2147483648
-100
-[parent PID=1538] ребёнок PID=1539 завершился с кодом 1
-код возврата: 1
-
-$ echo no_such_file.txt | ./parent
-[parent PID=1541] запущен, жду имя файла
-parent: open: No such file or directory
-код возврата: 1
-
-$ ps -eo pid,ppid,stat,comm | grep -E "parent|child"   # после завершения: ни процессов, ни зомби
-(вывод пустой)
+$ ps -eo pid,ppid,stat,cmd | grep -E "parent|child" | grep -v grep   # после завершения процессов и зомби нет
+(пусто)

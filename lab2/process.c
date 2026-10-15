@@ -10,7 +10,8 @@ static void close_or_report(int fd)
         perror("child: close");
 }
 
-pid_t start_child(const char *path, int in_fd, int out_fd, int unused_fd)
+pid_t start_child(const char *path, const char *name, int in_fd, int out_fd,
+                  const int *fds_to_close, int count)
 {
     pid_t pid = fork();
     if (pid == -1) {
@@ -30,13 +31,16 @@ pid_t start_child(const char *path, int in_fd, int out_fd, int unused_fd)
         _exit(1);
     }
 
-    /* Файл и труба теперь доступны как 0 и 1, старые номера больше не нужны. */
-    close_or_report(in_fd);
-    close_or_report(out_fd);
-    close_or_report(unused_fd);
+    /*
+     * Нужные номерки уже скопированы в 0 и 1, поэтому закрываем все исходные:
+     * оба файла и все концы обеих труб. Особенно важны концы записи: если
+     * child2 оставит у себя pipe1[1], child1 не получит EOF, пока жив child2.
+     */
+    for (int i = 0; i < count; i++)
+        close_or_report(fds_to_close[i]);
 
     /* exec заменяет программу, но таблица дескрипторов остаётся той же. */
-    execl(path, "child", (char *)NULL);
+    execl(path, name, (char *)NULL);
 
     /* Сюда попадаем, только если exec не удался. */
     perror("child: execl");
